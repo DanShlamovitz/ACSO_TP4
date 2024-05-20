@@ -67,6 +67,7 @@ class ThreadPool {
   Semaphore sem;
   std::mutex thunks_lock;
   std::queue<std::function<void(void)>> thunks;
+  int task_counter = 0; 
 
 
 /**

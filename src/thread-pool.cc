@@ -41,6 +41,7 @@ void ThreadPool::worker(size_t ID) {
             wts[ID].thunk();
         }
         wts[ID].busy = false;
+        printf("el valor de task_counter es %d\n", task_counter);
     }
 }
 
@@ -49,9 +50,8 @@ ThreadPool::ThreadPool(size_t numThreads) : wts(numThreads) {
     printf("creo el thread pool\n");
     dt = thread([this](){dispatcher();});
     for (size_t i = 0; i < numThreads; i++) {
-        //inizializar los workers como workers?
         wts[i].ID = i;
-        wts[i].ts = thread([this, i](){worker(i);}); // que poronga pongo aca
+        wts[i].ts = thread([this, i](){worker(i);}); 
     }
 
 }
@@ -64,7 +64,10 @@ void ThreadPool::schedule(const function<void(void)>& thunk) {
 }
 
 void ThreadPool::wait() {
-    std::this_thread::sleep_for(std::chrono::seconds(5)); // corregir
+    // while (task_counter > 0) {
+        // printf("esperando\n");
+        this_thread::sleep_for(chrono::milliseconds(5000));
+    // }
 }
 
 ThreadPool::~ThreadPool() {
