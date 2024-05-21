@@ -85,6 +85,7 @@ static void reuseThreadPoolTest() {
             sleep_for(50);
         });
     }
+
     pool.wait();
     pool.schedule([] {
         oslock.lock();
@@ -102,7 +103,7 @@ struct testEntry {
 
 static void buildMap(map<string, function<void(void)>>& testFunctionMap) {
     testEntry entries[] = {
-        {"--single-thread-no-wait", singleThreadNoWaitTest},
+        {"--single-thread-no-wait", singleThreadNoWaitTest}, // ok
         {"--single-thread-single-wait", singleThreadSingleWaitTest},
         {"--no-threads-double-wait", noThreadsDoubleWaitTest},
         {"--reuse-thread-pool", reuseThreadPoolTest},

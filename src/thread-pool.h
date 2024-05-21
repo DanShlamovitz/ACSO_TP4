@@ -20,9 +20,8 @@
 
 struct Worker{
   std::function<void(void)> thunk;
-  bool busy = false;
-  std::condition_variable cv;
-  std::mutex mtx;
+  bool busy;
+  Semaphore worker_sem;
   size_t ID; 
   std::thread ts; 
 };
@@ -65,10 +64,13 @@ class ThreadPool {
   std::thread dt;                // dispatcher thread handle
   std::vector<Worker> wts;
   Semaphore sem;
+  Semaphore wsem;
   std::mutex thunks_lock;
+  condition_variable_any thunks_cv;
   std::queue<std::function<void(void)>> thunks;
-  int task_counter = 0; 
-
+  bool finished = false;
+  Semaphore completed_sem;
+  int work_count;
 
 /**
  * ThreadPools are the type of thing that shouldn't be cloneable, since it's
