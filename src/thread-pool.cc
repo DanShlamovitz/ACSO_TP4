@@ -20,7 +20,13 @@ void ThreadPool::worker(size_t ID) {
         if (finished) break;
         wts[ID].thunk();
         wts[ID].busy = false;
-        work_count --;
+        {
+            unique_lock<mutex> lock(thunks_lock);
+            work_count--;
+            if (work_count == 0) {
+                cv.notify_all();
+            }
+        }
         wsem.signal();
     }
 }
@@ -28,8 +34,8 @@ void ThreadPool::worker(size_t ID) {
 void ThreadPool::dispatcher() {
     while (true) {
         sem.wait();
-        wsem.wait();
         if (finished) break;
+        wsem.wait();
         function<void(void)> thunk;
         { // cuando cierro desbloqueo
             unique_lock<mutex> lock(thunks_lock);
@@ -65,17 +71,15 @@ void ThreadPool::schedule(const function<void(void)>& thunk) {
     thunks_lock.unlock();
 }
 void ThreadPool::wait() {
-    while (true){
-        bool all_finished = true;
-        {
-            unique_lock<mutex> lock(thunks_lock);
-            all_finished = (work_count == 0);
-        }
-        if (all_finished) return; 
+    // cout << "Wait \n";
+    unique_lock<mutex> lock(thunks_lock);
+    while (work_count > 0) {
+        cv.wait(lock);
     }
-    return;
 }
+
 ThreadPool::~ThreadPool() {
+    // cout << "Destructor \n";
     wait();
     finished = true;
     sem.signal();

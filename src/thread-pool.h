@@ -70,6 +70,7 @@ class ThreadPool {
   std::queue<std::function<void(void)>> thunks;
   bool finished = false;
   Semaphore completed_sem;
+  std::condition_variable_any cv;
   int work_count;
 
 /**
