@@ -61,7 +61,7 @@ class ThreadPool {
  private:
   void dispatcher();
   void worker(size_t ID);
-  std::thread dt;                // dispatcher thread handle
+  std::thread dt;                
   std::vector<Worker> wts;
   Semaphore sem;
   Semaphore wsem;
