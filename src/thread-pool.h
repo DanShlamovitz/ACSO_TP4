@@ -66,7 +66,6 @@ class ThreadPool {
   Semaphore sem;
   Semaphore wsem;
   std::mutex thunks_lock;
-  condition_variable_any thunks_cv;
   std::queue<std::function<void(void)>> thunks;
   bool finished = false;
   Semaphore completed_sem;
